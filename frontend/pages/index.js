@@ -1,10 +1,13 @@
 import Head from "next/head";
 import Link from "next/link";
+import qs from "qs";
 import styles from "../styles/Home.module.css";
 import { apiClient } from "../lib/api";
 
 export default function Home({ data }) {
-  console.log(data);
+  // console.log(data);
+  const qstring = qs.stringify({ _limit: 30, test: { deep: 1 } });
+  console.log("qstring", qstring);
   return (
     <div className={styles.container}>
       <Head>

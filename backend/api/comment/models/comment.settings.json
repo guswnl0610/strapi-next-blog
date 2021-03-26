@@ -22,8 +22,9 @@
       "model": "article",
       "via": "comments"
     },
-    "author": {
-      "model": "author",
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user",
       "via": "comments"
     }
   }

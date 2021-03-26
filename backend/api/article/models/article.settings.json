@@ -26,9 +26,10 @@
       "via": "article",
       "collection": "comment"
     },
-    "author": {
-      "via": "articles",
-      "model": "author"
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "article"
     }
   }
 }
