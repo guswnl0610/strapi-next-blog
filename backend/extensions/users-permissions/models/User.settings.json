@@ -59,13 +59,13 @@
       "plugin": "users-permissions",
       "configurable": false
     },
-    "article": {
-      "via": "user",
-      "model": "article"
+    "articles": {
+      "collection": "article",
+      "via": "user"
     },
     "comments": {
-      "via": "user",
-      "collection": "comment"
+      "collection": "comment",
+      "via": "user"
     }
   }
 }
