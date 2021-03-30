@@ -8,10 +8,13 @@ const { sanitizeEntity } = require("strapi-utils");
 
 module.exports = {
   async findByUser(ctx) {
-    const user = await strapi.plugins["users-permissions"].services.user.fetch({
-      id: ctx.state.user.id,
+    // const user = await strapi.plugins["users-permissions"].services.user.fetch({
+    //   id: ctx.state.user.id,
+    // });
+
+    const entity = await strapi.services.article.find({
+      "user.id": ctx.state.user.id,
     });
-    const entity = user.articles;
 
     return sanitizeEntity(entity, { model: strapi.models.article });
   },

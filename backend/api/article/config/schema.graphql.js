@@ -1,5 +1,6 @@
 module.exports = {
   definition: `
+    
   `,
   query: `
     articlesByUser: [Article]!
