@@ -91,7 +91,7 @@ export default function Index() {
 }
 
 export const getServerSideProps = async (context) => {
-  console.log(context.req.cookies);
+  // console.log(context.req.cookies);
   return {
     props: {},
   };
