@@ -133,6 +133,8 @@ module.exports = {
           id: user.id,
         });
 
+        console.log(token);
+
         ctx.cookies.set("token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production" ? true : false,
@@ -192,6 +194,7 @@ module.exports = {
             : process.env.PRODUCTION_URL,
       });
 
+      // console.log(ctx.cookies);
       ctx.send({
         status: "Authenticated",
         // jwt: strapi.plugins["users-permissions"].services.jwt.issue({

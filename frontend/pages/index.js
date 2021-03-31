@@ -6,9 +6,9 @@ import { userVar } from "lib/apollo/store";
 import Link from "next/link";
 
 const LOGIN = gql`
-  mutation Login($input: UsersPermissionsLoginInput!) {
-    login(input: $input) {
-      jwt
+  mutation LoginWithToken($input: UsersPermissionsLoginInput!) {
+    loginWithToken(input: $input) {
+      status
       user {
         id
         username
@@ -18,9 +18,13 @@ const LOGIN = gql`
   }
 `;
 
-export default function Login() {
+export default function Index() {
   const [inputState, setInputState] = useState({ identifier: "", password: "" });
-  const [login, { data, loading, error }] = useMutation(LOGIN);
+  const [login, { data, loading, error }] = useMutation(LOGIN, {
+    onCompleted: (data) => {
+      console.log(data);
+    },
+  });
   const router = useRouter();
 
   const handleInputChange = (e) => {
@@ -41,17 +45,17 @@ export default function Login() {
     }
   };
 
-  useEffect(() => {
-    if (!data) return;
-    const { login } = data;
-    localStorage.setItem("token", login.jwt);
-    userVar(login.user);
-    router.push("/home");
-  }, [data]);
+  // useEffect(() => {
+  //   if (!data) return;
+  //   const { login } = data;
+  //   localStorage.setItem("token", login.jwt);
+  //   userVar(login.user);
+  //   router.push("/home");
+  // }, [data]);
 
-  useEffect(() => {
-    localStorage.getItem("token") && router.push("/home");
-  }, []);
+  // useEffect(() => {
+  //   localStorage.getItem("token") && router.push("/home");
+  // }, []);
 
   return (
     <div>
@@ -85,3 +89,10 @@ export default function Login() {
     </div>
   );
 }
+
+export const getServerSideProps = async (context) => {
+  console.log(context.req.cookies);
+  return {
+    props: {},
+  };
+};
