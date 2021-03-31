@@ -1,13 +1,16 @@
 import { useMemo } from "react";
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+// import { parseCookies } from "nookies"
+// import cookies from "next-cookies";
+import nookies from "nookies";
 
 let apolloClient;
 let token;
 
 const authLink = setContext((_, { headers }) => {
   if (typeof window !== "undefined") {
-    token = localStorage.getItem("token") || "";
+    // token = localStorage.getItem("token") || "";
   }
   if (headers) token = headers.token;
   return {
@@ -31,7 +34,11 @@ const createApolloClient = () => {
   });
 };
 
-export const initializeApollo = (initialState = null) => {
+export const initializeApollo = (initialState = null, context = null) => {
+  if (context) {
+    const mycookie = nookies.get(context);
+    token = mycookie.token || "";
+  }
   const _apolloClient = apolloClient ?? createApolloClient();
 
   if (initialState) {

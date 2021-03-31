@@ -1,22 +1,13 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { useMutation, gql } from "@apollo/client";
+import { useRouter, Router } from "next/router";
+import { useMutation, gql, useLazyQuery } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 import Link from "next/link";
-
-const LOGIN = gql`
-  mutation LoginWithToken($input: UsersPermissionsLoginInput!) {
-    loginWithToken(input: $input) {
-      status
-      user {
-        id
-        username
-        email
-      }
-    }
-  }
-`;
+import nookies from "nookies";
+import { initializeApollo } from "lib/apollo/client";
+import { ME } from "lib/apollo/query";
+import { LOGIN } from "lib/apollo/mutation";
 
 export default function Index() {
   const [inputState, setInputState] = useState({ identifier: "", password: "" });
@@ -44,18 +35,6 @@ export default function Index() {
       console.log(error);
     }
   };
-
-  // useEffect(() => {
-  //   if (!data) return;
-  //   const { login } = data;
-  //   localStorage.setItem("token", login.jwt);
-  //   userVar(login.user);
-  //   router.push("/home");
-  // }, [data]);
-
-  // useEffect(() => {
-  //   localStorage.getItem("token") && router.push("/home");
-  // }, []);
 
   return (
     <div>
@@ -90,9 +69,24 @@ export default function Index() {
   );
 }
 
-export const getServerSideProps = async (context) => {
+export const getServerSideProps = async (ctx) => {
   // console.log(context.req.cookies);
+  const client = initializeApollo(null, ctx);
+
+  try {
+    const { data } = await client.query({ query: ME });
+    // console.log(data);
+    ctx.res.setHeader("location", "/home");
+    ctx.res.statusCode = 302;
+    ctx.res.end();
+  } catch (error) {
+    console.log(error);
+    nookies.destroy(ctx, "token");
+  }
+
   return {
-    props: {},
+    props: {
+      initialApolloState: client.cache.extract(),
+    },
   };
 };
