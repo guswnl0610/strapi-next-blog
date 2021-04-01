@@ -36,7 +36,7 @@ function Nav() {
         {_userVar && (
           <span onClick={() => setIsModalOn((prev) => !prev)} className="cursor-pointer" ref={profileRef}>
             {_userVar.profile_image?.url ? (
-              <div className="rounded-1/2 overflow-hidden w-8 h-8">
+              <div className="rounded-1/2 overflow-hidden w-8 h-8 hover:shadow-lg transition-all">
                 <Image
                   alt={`${_userVar.username}의 프로필사진`}
                   src={`${process.env.NEXT_PUBLIC_API_SERVER}${_userVar?.profile_image?.url}`}
@@ -59,10 +59,12 @@ function Nav() {
         <p>
           <span className="text-red-400 font-bold mr-1">{_userVar?.username}</span>님 안녕하세요!
         </p>
-        <p className="flex items-center my-2">
-          <SettingsSharp color="rgba(0,0,0,0.2)" />
-          <span className="ml-2">설정</span>
-        </p>
+        <Link href="/user/settings">
+          <p className="flex items-center my-2">
+            <SettingsSharp color="rgba(0,0,0,0.2)" />
+            <a className="ml-2">설정</a>
+          </p>
+        </Link>
         <p className="flex justify-end mt-2 pt-2 border-t w-full border-gray-200 text-gray-400" onClick={handleLogout}>
           로그아웃
         </p>
