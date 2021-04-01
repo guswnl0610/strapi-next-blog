@@ -9,15 +9,18 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.13",
+    "@uppy/core": "^1.17.0",
+    "@uppy/react": "^1.11.6",
+    "@uppy/xhr-upload": "^1.7.2",
     "axios": "^0.21.1",
     "graphql": "^15.5.0",
     "next": "10.0.9",
-    "next-cookies": "^2.0.3",
     "nookies": "^2.5.2",
     "qs": "^6.10.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "universal-cookie": "^4.0.4"
+    "react-ionicons": "^4.2.0",
+    "styled-components": "^5.2.3"
   },
   "devDependencies": {
     "autoprefixer": "^10.2.5",

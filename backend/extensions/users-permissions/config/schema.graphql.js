@@ -25,6 +25,7 @@ module.exports = {
     }
   `,
   query: `
+    myInfo: UsersPermissionsUser
   `,
   mutation: `
     registerWithMail(input: UsersPermissionsRegisterInput!):UserPermissionsLoginPayloadWithToken!
@@ -32,7 +33,21 @@ module.exports = {
   `,
   type: {},
   resolver: {
-    Query: {},
+    Query: {
+      myInfo: {
+        description: "Get loginned user's information",
+        resolverOf: "plugins::users-permissions.user.me",
+        resolver: async (obj, options, { context }) => {
+          await strapi.plugins["users-permissions"].controllers.user.myInfo(
+            context
+          );
+          let output = context.body.toJSON
+            ? context.body.toJSON()
+            : context.body;
+          return output;
+        },
+      },
+    },
     Mutation: {
       registerWithMail: {
         description:

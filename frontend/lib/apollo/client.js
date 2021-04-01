@@ -43,7 +43,7 @@ export const initializeApollo = (initialState = null, context = null) => {
 
   if (initialState) {
     const existingCache = _apolloClient.extract();
-    _apolloClient.cache.restore({ ...existingCache, initialState });
+    _apolloClient.cache.restore({ ...existingCache, ...initialState });
   }
 
   //ssg나 ssr인 경우

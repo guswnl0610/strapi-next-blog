@@ -1,12 +1,19 @@
 import Head from "next/head";
+import { useEffect } from "react";
 import Link from "next/link";
 import { gql, useQuery } from "@apollo/client";
+import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 const ArticleList = dynamic(() => import("components/ArticleList"));
-import { GET_ARTICLES } from "lib/apollo/query";
+import { GET_ARTICLES, MYINFO } from "lib/apollo/query";
+import { initializeApollo } from "lib/apollo/client";
+import nookies from "nookies";
+import { useAuth } from "hooks/useAuth";
 
 export default function Home() {
   const { data, loading, error } = useQuery(GET_ARTICLES);
+
+  useAuth();
 
   return (
     <div>
@@ -22,7 +29,18 @@ export default function Home() {
 }
 
 export const getServerSideProps = async (ctx) => {
+  // console.log(context.req.cookies);
+  const client = initializeApollo(null, ctx);
+  try {
+    await client.query({ query: MYINFO });
+  } catch (error) {
+    console.log(error);
+    nookies.destroy(ctx, "token");
+  }
+
   return {
-    props: {},
+    props: {
+      initialApolloState: client.cache.extract() || {},
+    },
   };
 };

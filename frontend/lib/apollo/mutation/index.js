@@ -21,3 +21,17 @@ export const LOGOUT = gql`
     }
   }
 `;
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser($input: updateUserInput) {
+    updateUser(input: $input) {
+      user {
+        id
+        username
+        profile_image {
+          url
+        }
+      }
+    }
+  }
+`;

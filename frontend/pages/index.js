@@ -1,22 +1,25 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter, Router } from "next/router";
-import { useMutation, gql, useLazyQuery } from "@apollo/client";
+import { useMutation, gql, useLazyQuery, useQuery } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 import Link from "next/link";
 import nookies from "nookies";
 import { initializeApollo } from "lib/apollo/client";
-import { ME } from "lib/apollo/query";
+import { ME, MYINFO } from "lib/apollo/query";
 import { LOGIN } from "lib/apollo/mutation";
+import { useAuth } from "hooks/useAuth";
 
 export default function Index() {
+  const router = useRouter();
   const [inputState, setInputState] = useState({ identifier: "", password: "" });
-  const [login, { data, loading, error }] = useMutation(LOGIN, {
+  const { data: me, refetch } = useQuery(MYINFO);
+  const [login, { loading, error, data: loginData }] = useMutation(LOGIN, {
     onCompleted: (data) => {
       console.log(data);
+      router.push("/home");
     },
   });
-  const router = useRouter();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +38,8 @@ export default function Index() {
       console.log(error);
     }
   };
+
+  useAuth();
 
   return (
     <div>
@@ -74,11 +79,7 @@ export const getServerSideProps = async (ctx) => {
   const client = initializeApollo(null, ctx);
 
   try {
-    const { data } = await client.query({ query: ME });
-    // console.log(data);
-    ctx.res.setHeader("location", "/home");
-    ctx.res.statusCode = 302;
-    ctx.res.end();
+    await client.query({ query: MYINFO });
   } catch (error) {
     console.log(error);
     nookies.destroy(ctx, "token");
@@ -86,7 +87,7 @@ export const getServerSideProps = async (ctx) => {
 
   return {
     props: {
-      initialApolloState: client.cache.extract(),
+      initialApolloState: client.cache.extract() || {},
     },
   };
 };
