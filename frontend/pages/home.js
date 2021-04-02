@@ -8,15 +8,13 @@ const ArticleList = dynamic(() => import("components/ArticleList"));
 import { GET_ARTICLES, MYINFO } from "lib/apollo/query";
 import { initializeApollo } from "lib/apollo/client";
 import nookies from "nookies";
-import { useAuth } from "hooks/useAuth";
+import BaseLayout from "components/Layout/BaseLayout";
 
 export default function Home() {
   const { data, loading, error } = useQuery(GET_ARTICLES);
 
-  useAuth();
-
   return (
-    <div>
+    <BaseLayout>
       <Head>
         <title>hello~</title>
         <link rel="icon" href="/favicon.ico" />
@@ -24,7 +22,7 @@ export default function Home() {
       <main className="my-10">
         <ArticleList data={data?.articlesByUser} />
       </main>
-    </div>
+    </BaseLayout>
   );
 }
 

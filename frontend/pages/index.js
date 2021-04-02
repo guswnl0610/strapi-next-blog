@@ -8,13 +8,13 @@ import nookies from "nookies";
 import { initializeApollo } from "lib/apollo/client";
 import { ME, MYINFO } from "lib/apollo/query";
 import { LOGIN } from "lib/apollo/mutation";
-import { useAuth } from "hooks/useAuth";
+import BaseLayout from "components/Layout/BaseLayout";
 
 export default function Index() {
   const router = useRouter();
   const [inputState, setInputState] = useState({ identifier: "", password: "" });
   const { data: me, refetch } = useQuery(MYINFO);
-  const [login, { loading, error, data: loginData }] = useMutation(LOGIN, {
+  const [login] = useMutation(LOGIN, {
     onCompleted: (data) => {
       console.log(data);
       router.push("/home");
@@ -39,10 +39,12 @@ export default function Index() {
     }
   };
 
-  useAuth();
+  useEffect(() => {
+    if (me) router.push("/home");
+  }, [me]);
 
   return (
-    <div>
+    <BaseLayout>
       <Head>
         <title>로그인</title>
         <link rel="icon" href="/favicon.ico" />
@@ -70,7 +72,7 @@ export default function Index() {
           </button>
         </form>
       </main>
-    </div>
+    </BaseLayout>
   );
 }
 

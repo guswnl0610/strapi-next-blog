@@ -17,6 +17,7 @@ export const MYINFO = gql`
       username
       email
       profile_image {
+        id
         url
       }
     }

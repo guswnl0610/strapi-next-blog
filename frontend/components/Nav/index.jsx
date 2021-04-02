@@ -8,6 +8,7 @@ import { MYINFO } from "lib/apollo/query";
 import { userVar } from "lib/apollo/store";
 import { useClickOutside } from "hooks/useClickOutside";
 import { LOGOUT } from "lib/apollo/mutation";
+import { useAuth } from "hooks/useAuth";
 
 function Nav() {
   const _userVar = useReactiveVar(userVar);
@@ -18,6 +19,7 @@ function Nav() {
   const router = useRouter();
 
   useClickOutside(modalRef, () => setIsModalOn(false), profileRef);
+  useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -30,19 +32,19 @@ function Nav() {
   return (
     <nav className="flex justify-between sticky top-0 w-full py-3 px-6 h-14 bg-white shadow-lg">
       <Link href="/home">
-        <a className="text-2xl text-red-400 font-bold">Title</a>
+        <a className="text-2xl text-gray-700 font-bold">Title</a>
       </Link>
       <span>
         {_userVar && (
           <span onClick={() => setIsModalOn((prev) => !prev)} className="cursor-pointer" ref={profileRef}>
             {_userVar.profile_image?.url ? (
-              <div className="rounded-1/2 overflow-hidden w-8 h-8 hover:shadow-lg transition-all">
+              <div className="rounded-1/2 overflow-hidden w-8 h-8 hover:shadow-md transition-all">
                 <Image
                   alt={`${_userVar.username}의 프로필사진`}
                   src={`${process.env.NEXT_PUBLIC_API_SERVER}${_userVar?.profile_image?.url}`}
                   width={50}
                   height={50}
-                  objectFit="contain"
+                  objectFit="cover"
                 />
               </div>
             ) : (

@@ -11,9 +11,7 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <ApolloProvider client={client}>
-      <BaseLayout>
-        <Component {...pageProps} />;
-      </BaseLayout>
+      <Component {...pageProps} />;
     </ApolloProvider>
   );
 }
