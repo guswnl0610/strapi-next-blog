@@ -1,16 +1,48 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Link from "next/link";
+import dayjs from "dayjs";
+import { TimeOutline, ChatboxEllipsesOutline } from "react-ionicons";
 
 function ArticleList({ data }) {
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    console.log(listRef);
+    if (!listRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        console.log(entries);
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(listRef.current);
+
+    return () => observer.disconnect();
+  }, [listRef]);
+
   return (
     <div className="max-w-4xl shadow-lg m-auto w-full p-10">
       <h1 className="text-2xl text-gray-800 mb-4">Contents</h1>
-      {data?.map((article) => (
-        <div key={article.id} className="group my-2 cursor-pointer py-2 px-3 rounded-lg text-gray-600">
-          <Link className="text-lg" href={`articles/:id`} as={`articles/${article.id}`}>
-            <a className="font-semibold text-gray-800 group-hover:text-red-400 transition-colors">{article.title}</a>
+      {data?.map((article, idx) => (
+        <div
+          key={article.id}
+          ref={idx === data?.length - 2 ? listRef : null}
+          className="group my-2 cursor-pointer py-2 px-3 rounded-lg text-gray-600">
+          <Link href={`articles/:id`} as={`articles/${article.id}`}>
+            <a className=" text-gray-800  transition-colors">
+              <span className="font-semibold  group-hover:text-red-400 text-lg">{article.title}</span>
+              <p className="flex items-center text-sm text-gray-400">
+                <TimeOutline color={"#00000"} width="1rem" />
+                <span className="pl-1">{dayjs(article.created_at).format("YYYY MMMM D ddd h m a")}</span>
+              </p>
+              <div className="text-sm truncate ">{article.desc}</div>
+              <div className="flex items-center text-sm text-gray-400">
+                <ChatboxEllipsesOutline color={"#00000"} />
+                <span className="pl-1">{article.comments.length}</span>
+              </div>
+            </a>
           </Link>
-          <div className="text-sm truncate">{article.desc}</div>
         </div>
       ))}
     </div>

@@ -25,13 +25,15 @@ export const MYINFO = gql`
 `;
 
 export const GET_ARTICLES = gql`
-  query {
-    articlesByUser {
+  query ArticleByUser($sort: String, $start: Int, $limit: Int) {
+    articlesByUser(sort: $sort, start: $start, limit: $limit) {
       id
       title
       desc
-      likes
       created_at
+      comments {
+        id
+      }
     }
   }
 `;

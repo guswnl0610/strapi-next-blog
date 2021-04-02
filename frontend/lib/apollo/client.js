@@ -30,7 +30,20 @@ const createApolloClient = () => {
         credentials: "include",
       })
     ),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            articlesByUser: {
+              keyArgs: false,
+              merge(existing = [], incoming) {
+                return [...existing, ...incoming];
+              },
+            },
+          },
+        },
+      },
+    }),
   });
 };
 
