@@ -38,7 +38,11 @@ function UserSettings() {
       formData: true,
       fieldName: "files",
       limit: 1,
-    })
+    }),
+    (result) => {
+      const { response } = result.successful[0];
+      uploadedImageIdRef.current = response?.body[0].id;
+    }
   );
 
   const handleUpdateUser = async () => {
@@ -74,16 +78,6 @@ function UserSettings() {
     prevState.state = !!value.trim();
     setValidState({ ...validState, [name]: prevState });
   };
-
-  useEffect(() => {
-    uppy.on("complete", (result) => {
-      console.log(result);
-      const { response } = result.successful[0];
-      uploadedImageIdRef.current = response?.body[0].id;
-    });
-
-    return () => uppy.off("complete");
-  }, []);
 
   return (
     <BaseLayout>
