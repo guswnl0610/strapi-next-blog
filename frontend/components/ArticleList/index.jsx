@@ -10,7 +10,7 @@ function ArticleList({ data }) {
           <Link className="text-lg" href={`articles/:id`} as={`articles/${article.id}`}>
             <a className="font-semibold text-gray-800 group-hover:text-red-400 transition-colors">{article.title}</a>
           </Link>
-          <p className="text-sm truncate">{article.desc}</p>
+          <div className="text-sm truncate">{article.desc}</div>
         </div>
       ))}
     </div>

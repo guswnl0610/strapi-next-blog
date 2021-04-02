@@ -45,16 +45,14 @@ function UserSettings() {
     for (let key in validState) {
       if (!validState[key].state) return validState[key].ref.current.focus();
     }
-
     try {
-      console.log(uploadedImageIdRef.current);
       await updateUser({
         variables: {
           input: {
             where: {
               id: me.myInfo.id,
             },
-            data: { ...data, profile_image: uploadedImageIdRef.current || null },
+            data: { ...data, profile_image: uploadedImageIdRef.current },
           },
         },
       });
@@ -86,8 +84,6 @@ function UserSettings() {
 
     return () => uppy.off("complete");
   }, []);
-
-  console.log(updatedUser);
 
   return (
     <BaseLayout>
@@ -137,7 +133,11 @@ function UserSettings() {
           </div>
         </div>
         <div className="flex my-5">
-          <button className="py-2 px-5 bg-gray-200 rounded-xl mr-3 hover:bg-gray-300 transition-colors">취소</button>
+          <button
+            className="py-2 px-5 bg-gray-200 rounded-xl mr-3 hover:bg-gray-300 transition-colors"
+            onClick={() => router.push("/home")}>
+            취소
+          </button>
           <button
             className="py-2 px-5 bg-red-200 rounded-xl ml-3 hover:bg-red-300 transition-colors"
             onClick={handleUpdateUser}>

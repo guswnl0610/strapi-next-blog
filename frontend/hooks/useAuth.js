@@ -10,11 +10,9 @@ export const useAuth = () => {
 
   useEffect(() => {
     if (data) {
-      console.log("user");
       userVar(data.myInfo);
       return;
     }
-    console.log("no user");
     userVar(null);
     router.push("/");
   }, []);
