@@ -13,7 +13,7 @@ import BaseLayout from "components/Layout/BaseLayout";
 const limit = 10;
 
 export default function Home() {
-  const [start, setStart] = useState(0);
+  const start = useRef(0);
   const { data, loading, variables, fetchMore } = useQuery(GET_ARTICLES, {
     variables: {
       sort: "id:desc",
@@ -23,11 +23,8 @@ export default function Home() {
   });
 
   const handlePagination = async () => {
-    // const newvar = { ...variables, start: (start + 1) * limit };
-    // console.log(newvar);
-    // refetch(newvar);
-    await fetchMore({ variables: { ...variables, start: start + limit } });
-    setStart((prev) => prev + limit);
+    await fetchMore({ variables: { ...variables, start: start.current + limit } });
+    start.current += limit;
   };
 
   return (
@@ -37,8 +34,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="my-10">
-        <ArticleList data={data?.articlesByUser} />
-        <button onClick={handlePagination}>버튼꾹~</button>
+        {data && <ArticleList data={data.articlesByUser} onPagination={handlePagination} />}
       </main>
     </BaseLayout>
   );

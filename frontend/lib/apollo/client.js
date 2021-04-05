@@ -37,6 +37,7 @@ const createApolloClient = () => {
             articlesByUser: {
               keyArgs: false,
               merge(existing = [], incoming) {
+                console.log("existing", existing, "incoming", incoming);
                 return [...existing, ...incoming];
               },
             },
