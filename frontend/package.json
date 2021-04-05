@@ -13,6 +13,7 @@
     "@uppy/react": "^1.11.6",
     "@uppy/xhr-upload": "^1.7.2",
     "axios": "^0.21.1",
+    "classnames": "^2.3.1",
     "dayjs": "^1.10.4",
     "graphql": "^15.5.0",
     "next": "10.0.9",

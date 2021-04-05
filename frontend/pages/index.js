@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import { useRouter, Router } from "next/router";
-import { useMutation, gql, useLazyQuery, useQuery } from "@apollo/client";
-import { userVar } from "lib/apollo/store";
-import Link from "next/link";
+import { useRouter } from "next/router";
+import { useMutation, useQuery } from "@apollo/client";
 import nookies from "nookies";
 import { initializeApollo } from "lib/apollo/client";
-import { ME, MYINFO } from "lib/apollo/query";
+import { MYINFO } from "lib/apollo/query";
 import { LOGIN } from "lib/apollo/mutation";
 import BaseLayout from "components/Layout/BaseLayout";
 

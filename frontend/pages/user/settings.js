@@ -12,6 +12,7 @@ import { UPDATE_USER } from "lib/apollo/mutation";
 import { CloseCircle } from "react-ionicons";
 import nookies from "nookies";
 import BaseLayout from "components/Layout/BaseLayout";
+import classNames from "classnames";
 
 function UserSettings() {
   const { data: me } = useQuery(MYINFO);
@@ -119,9 +120,12 @@ function UserSettings() {
               type="text"
               name="username"
               value={data.username}
-              className={`py-1 px-2 ring-2 ${
-                validState.username.state ? "ring-gray-300" : "ring-red-800"
-              } rounded-md focus:${validState.username.state ? "ring-red-300" : "ring-red-800"} focus:outline-none`}
+              className={classNames("py-1 px-2 ring-2 rounded-md focus:outline-none", {
+                "ring-gray-300": validState.username.state,
+                "ring-red-800": !validState.username.state,
+                "focus:ring-red-300": validState.username.state,
+                "focus:ring-red-800": !validState.username.state,
+              })}
               onChange={handleInputChange}
             />
           </div>

@@ -1,32 +1,55 @@
 import React from "react";
-import { apiClient } from "../../lib/api";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import nookies from "nookies";
+import { MYINFO, GET_ARTICLE } from "lib/apollo/query";
+import { useQuery } from "@apollo/client";
+import { initializeApollo } from "lib/apollo/client";
+import BaseLayout from "components/Layout/BaseLayout";
 
-function Article({ data }) {
-  console.log(data);
+function Article() {
+  const router = useRouter();
+  const { data: article } = useQuery(GET_ARTICLE, { variables: router.query });
+  console.log(article.article);
+
   return (
-    <main className="w-max m-auto p-10 shadow-lg my-10">
-      <h2 className="text-2xl">{data?.title}</h2>
-      <p>{data?.created_at}</p>
-      <p>{data?.desc}</p>
-    </main>
+    <BaseLayout>
+      <Head>
+        <title>{article.article.title}</title>
+      </Head>
+      <main className="flex m-10 shadow-lg">
+        <section className="flex-1">
+          <h2>{article.article.title}</h2>
+          <div></div>
+        </section>
+        <aside className="w-96">dddddd</aside>
+      </main>
+    </BaseLayout>
   );
 }
 
-export const getStaticPaths = async () => {
-  const response = await apiClient.get("/articles");
-  const { data } = response;
-  const paths = data.map((article) => ({ params: { id: `${article.id}` } }));
-  return {
-    paths,
-    fallback: false,
-  };
-};
+export const getServerSideProps = async (ctx) => {
+  // console.log(context.req.cookies);
+  console.log(ctx);
+  const client = initializeApollo(null, ctx);
+  try {
+    await client.query({ query: MYINFO });
+  } catch (error) {
+    console.log(error);
+    nookies.destroy(ctx, "token");
+  }
 
-export const getStaticProps = async ({ params }) => {
-  const { id } = params;
-  const response = await apiClient.get(`/articles/${id}`);
-  const { data } = response;
-  return { props: { data } };
+  try {
+    await client.query({ query: GET_ARTICLE, variables: ctx.query });
+  } catch (error) {
+    console.log(error);
+  }
+
+  return {
+    props: {
+      initialApolloState: client.cache.extract() || {},
+    },
+  };
 };
 
 export default Article;

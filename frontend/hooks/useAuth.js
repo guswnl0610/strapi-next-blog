@@ -15,5 +15,5 @@ export const useAuth = () => {
     }
     userVar(null);
     router.push("/");
-  }, []);
+  }, [data]);
 };
