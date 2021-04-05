@@ -35,3 +35,22 @@ export const UPDATE_USER = gql`
     }
   }
 `;
+
+export const CREATE_COMMENT = gql`
+  mutation CreateComment($input: createCommentInput) {
+    createComment(input: $input) {
+      comment {
+        id
+        user {
+          username
+          profile_image {
+            url
+          }
+        }
+        likes
+        content
+        created_at
+      }
+    }
+  }
+`;

@@ -48,11 +48,18 @@ export const GET_ARTICLE = gql`
       likes
       user {
         username
+        email
+        profile_image {
+          url
+        }
       }
       comments {
         id
         user {
           username
+          profile_image {
+            url
+          }
         }
         likes
         content
