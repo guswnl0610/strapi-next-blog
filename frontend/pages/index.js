@@ -5,37 +5,14 @@ import { useMutation, useQuery } from "@apollo/client";
 import nookies from "nookies";
 import { initializeApollo } from "lib/apollo/client";
 import { MYINFO } from "lib/apollo/query";
-import { LOGIN } from "lib/apollo/mutation";
 import BaseLayout from "components/Layout/BaseLayout";
+import LoginForm from "components/Auth/LoginForm";
+import SignupForm from "components/Auth/SignupForm";
 
 export default function Index() {
   const router = useRouter();
-  const [inputState, setInputState] = useState({ identifier: "", password: "" });
+  const [isLogin, setIsLogin] = useState(true);
   const { data: me, refetch } = useQuery(MYINFO);
-  const [login] = useMutation(LOGIN, {
-    onCompleted: (data) => {
-      console.log(data);
-      router.push("/home");
-    },
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setInputState({ ...inputState, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      await login({
-        variables: {
-          input: inputState,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     if (me) router.push("/home");
@@ -48,27 +25,23 @@ export default function Index() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="my-10">
-        <form className="flex flex-col items-center" onSubmit={handleSubmit}>
-          <input
-            name="identifier"
-            className="p-3 my-3 w-full max-w-md text-md rounded-md border border-red-200"
-            type="text"
-            value={inputState.identifier}
-            placeholder="이메일을 입력하세요"
-            onChange={handleInputChange}
-          />
-          <input
-            name="password"
-            className="p-3 my-3 w-full max-w-md text-md rounded-md border-red-200 border "
-            type="password"
-            value={inputState.password}
-            placeholder="비밀번호를 입력하세요"
-            onChange={handleInputChange}
-          />
-          <button className="bg-red-300 max-w-md w-full py-3 px-6 my-3 text-md rounded-lg text-white hover:bg-red-400 transition-colors">
+        <div className="flex justify-center mb-5">
+          <button
+            className={`py-5 px-10 w-56 text-gray-500 border-b-2 focus:outline-none ${
+              isLogin ? "border-red-200" : "border-gray-200"
+            }`}
+            onClick={() => setIsLogin(true)}>
             로그인
           </button>
-        </form>
+          <button
+            className={`py-5 px-10 w-56 text-gray-500 border-b-2 focus:outline-none ${
+              isLogin ? "border-gray-200" : "border-red-200"
+            }`}
+            onClick={() => setIsLogin(false)}>
+            회원가입
+          </button>
+        </div>
+        {isLogin ? <LoginForm /> : <SignupForm />}
       </main>
     </BaseLayout>
   );

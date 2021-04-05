@@ -22,6 +22,19 @@ export const LOGOUT = gql`
   }
 `;
 
+export const REGISTER = gql`
+  mutation RegisterWithMail($input: UsersPermissionsRegisterInput!) {
+    registerWithMail(input: $input) {
+      status
+      user {
+        id
+        username
+        email
+      }
+    }
+  }
+`;
+
 export const UPDATE_USER = gql`
   mutation UpdateUser($input: updateUserInput) {
     updateUser(input: $input) {
