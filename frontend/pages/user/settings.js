@@ -3,16 +3,42 @@ import Uppy from "@uppy/core";
 import XHRUpload from "@uppy/xhr-upload";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 import { useUppy } from "hooks/useUppy";
 import { Dashboard } from "@uppy/react";
 import { initializeApollo } from "lib/apollo/client";
-import { MYINFO } from "lib/apollo/query";
-import { UPDATE_USER } from "lib/apollo/mutation";
 import { CloseCircle } from "react-ionicons";
-import nookies from "nookies";
+import checkLoggedIn from "lib/checkLoggedIn";
 import BaseLayout from "components/Layout/BaseLayout";
 import classNames from "classnames";
+
+export const UPDATE_USER = gql`
+  mutation UpdateUser($input: updateUserInput) {
+    updateUser(input: $input) {
+      user {
+        id
+        username
+        profile_image {
+          url
+        }
+      }
+    }
+  }
+`;
+
+export const MYINFO = gql`
+  query {
+    myInfo {
+      id
+      username
+      email
+      profile_image {
+        id
+        url
+      }
+    }
+  }
+`;
 
 function UserSettings() {
   const { data: me } = useQuery(MYINFO);
@@ -149,12 +175,8 @@ function UserSettings() {
 
 export const getServerSideProps = async (ctx) => {
   const client = initializeApollo(null, ctx);
-  try {
-    await client.query({ query: MYINFO });
-  } catch (error) {
-    console.log(error);
-    nookies.destroy(ctx, "token");
-  }
+
+  await checkLoggedIn(client, ctx);
 
   return {
     props: {

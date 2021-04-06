@@ -1,7 +1,19 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useMutation } from "@apollo/client";
-import { REGISTER } from "lib/apollo/mutation";
+import { useMutation, gql } from "@apollo/client";
+
+export const REGISTER = gql`
+  mutation RegisterWithMail($input: UsersPermissionsRegisterInput!) {
+    registerWithMail(input: $input) {
+      status
+      user {
+        id
+        username
+        email
+      }
+    }
+  }
+`;
 
 function SignupForm() {
   const router = useRouter();

@@ -1,11 +1,59 @@
 import React, { memo, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { useMutation, useReactiveVar } from "@apollo/client";
-import { CREATE_COMMENT } from "lib/apollo/mutation";
-import { GET_ARTICLE } from "lib/apollo/query";
-import { dateFormatter } from "utils/date";
+import dayjs from "dayjs";
+import { useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
+
+export const CREATE_COMMENT = gql`
+  mutation CreateComment($input: createCommentInput) {
+    createComment(input: $input) {
+      comment {
+        id
+        user {
+          username
+          profile_image {
+            url
+          }
+        }
+        likes
+        content
+        created_at
+      }
+    }
+  }
+`;
+
+const GET_ARTICLE = gql`
+  query Article($id: ID!) {
+    article(id: $id) {
+      id
+      created_at
+      title
+      desc
+      likes
+      user {
+        username
+        email
+        profile_image {
+          url
+        }
+      }
+      comments {
+        id
+        user {
+          username
+          profile_image {
+            url
+          }
+        }
+        likes
+        content
+        created_at
+      }
+    }
+  }
+`;
 
 function ArticleDetail({ article }) {
   const _userVar = useReactiveVar(userVar);
@@ -52,7 +100,7 @@ function ArticleDetail({ article }) {
   return (
     <article className="flex-1 p-10 ml-8 shadow-lg">
       <h2 className="text-3xl font-bold pb-3">{article.title}</h2>
-      <p className="pb-3 text-gray-600">{dateFormatter(article.created_at)}</p>
+      <p className="pb-3 text-gray-600">{dayjs(article.created_at).format("YYYY MMMM D ddd hh:mm a")}</p>
       <div className="prose" dangerouslySetInnerHTML={{ __html: article.desc }} />
       <div className="mt-10 pt-10 border-t-2 border-gray-200">
         <h3 className="text-xl font-semibold pb-5">Comments</h3>

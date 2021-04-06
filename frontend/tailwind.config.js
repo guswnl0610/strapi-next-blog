@@ -6,6 +6,9 @@ module.exports = {
       borderRadius: {
         "1/2": "50%",
       },
+      minHeight: {
+        "40rem": "40rem",
+      },
     },
   },
   variants: {

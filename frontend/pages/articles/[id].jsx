@@ -1,14 +1,43 @@
 import React from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import nookies from "nookies";
-import { useQuery, useMutation } from "@apollo/client";
-import { CREATE_COMMENT } from "lib/apollo/mutation";
-import { MYINFO, GET_ARTICLE } from "lib/apollo/query";
+import { useQuery, gql } from "@apollo/client";
 import { initializeApollo } from "lib/apollo/client";
 import BaseLayout from "components/Layout/BaseLayout";
 import AuthorSide from "components/AuthorSide";
 import ArticleDetail from "components/ArticleDetail";
+import checkLoggedIn from "lib/checkLoggedIn";
+
+const GET_ARTICLE = gql`
+  query Article($id: ID!) {
+    article(id: $id) {
+      id
+      created_at
+      title
+      desc
+      likes
+      user {
+        username
+        email
+        profile_image {
+          url
+        }
+      }
+      comments {
+        id
+        user {
+          username
+          profile_image {
+            url
+          }
+        }
+        likes
+        content
+        created_at
+      }
+    }
+  }
+`;
 
 function Article() {
   const router = useRouter();
@@ -31,14 +60,9 @@ function Article() {
 }
 
 export const getServerSideProps = async (ctx) => {
-  // console.log(context.req.cookies);
   const client = initializeApollo(null, ctx);
-  try {
-    await client.query({ query: MYINFO });
-  } catch (error) {
-    console.log(error);
-    nookies.destroy(ctx, "token");
-  }
+
+  await checkLoggedIn(client, ctx);
 
   try {
     await client.query({ query: GET_ARTICLE, variables: ctx.query });

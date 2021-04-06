@@ -3,12 +3,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { PersonCircleOutline, SettingsSharp } from "react-ionicons";
-import { useQuery, useMutation, useReactiveVar } from "@apollo/client";
-import { MYINFO } from "lib/apollo/query";
+import { useQuery, useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 import { useClickOutside } from "hooks/useClickOutside";
-import { LOGOUT } from "lib/apollo/mutation";
 import { useAuth } from "hooks/useAuth";
+
+const LOGOUT = gql`
+  mutation {
+    logout {
+      authorized
+      message
+    }
+  }
+`;
 
 function Nav() {
   const _userVar = useReactiveVar(userVar);
@@ -30,7 +37,7 @@ function Nav() {
   };
 
   return (
-    <nav className="flex justify-between sticky top-0 w-full py-3 px-6 h-14 bg-white shadow-lg">
+    <nav className="flex justify-between sticky top-0 w-full py-3 px-6 h-14 bg-white shadow-lg z-20">
       <Link href="/home">
         <a className="text-2xl text-gray-700 font-bold">Title</a>
       </Link>

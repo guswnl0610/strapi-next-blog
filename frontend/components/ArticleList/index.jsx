@@ -2,7 +2,6 @@ import React, { useRef, useEffect, memo } from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { TimeOutline, ChatboxEllipsesOutline } from "react-ionicons";
-import { dateFormatter } from "utils/date";
 
 function ArticleList({ data, onPagination }) {
   const listRef = useRef(null);
@@ -38,9 +37,9 @@ function ArticleList({ data, onPagination }) {
                 <span className="font-semibold  group-hover:text-red-400 text-lg">{article.title}</span>
                 <p className="flex items-center text-sm text-gray-400">
                   <TimeOutline color={"#00000"} width="1rem" />
-                  <span className="pl-1">{dateFormatter(article.created_at)}</span>
+                  <span className="pl-1">{dayjs(article.created_at).format("YYYY MMMM D ddd hh:mm a")}</span>
                 </p>
-                <div className="text-sm line-clamp-2 ">{article.desc}</div>
+                <div className="text-sm line-clamp-2 " dangerouslySetInnerHTML={{ __html: article.desc }} />
                 <div className="flex items-center text-sm text-gray-400">
                   <ChatboxEllipsesOutline color={"#00000"} />
                   <span className="pl-1">{article.comments.length}</span>

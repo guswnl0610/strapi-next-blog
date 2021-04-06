@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { useMutation } from "@apollo/client";
-import { LOGIN } from "lib/apollo/mutation";
+import { useMutation, gql } from "@apollo/client";
+
+export const LOGIN = gql`
+  mutation LoginWithToken($input: UsersPermissionsLoginInput!) {
+    loginWithToken(input: $input) {
+      status
+      user {
+        id
+        username
+        email
+      }
+    }
+  }
+`;
 
 function LoginForm() {
   const [inputState, setInputState] = useState({ identifier: "", password: "" });
