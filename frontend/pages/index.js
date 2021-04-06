@@ -68,7 +68,21 @@ export default function Index() {
 export const getServerSideProps = async (ctx) => {
   const client = initializeApollo(null, ctx);
 
-  await checkLoggedIn(client, ctx);
+  try {
+    await client.query({
+      query: gql`
+        query {
+          myInfo {
+            id
+            username
+          }
+        }
+      `,
+    });
+    ctx.res.setHeader("Location", "/home");
+    ctx.res.statusCode = 303;
+    ctx.res.end();
+  } catch (error) {}
 
   return {
     props: {

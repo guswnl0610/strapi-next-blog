@@ -19,7 +19,14 @@ const LOGOUT = gql`
 
 function Nav() {
   const _userVar = useReactiveVar(userVar);
-  const [logout, { client, data: logoutData }] = useMutation(LOGOUT);
+  const [logout, { client, data: logoutData }] = useMutation(LOGOUT, {
+    onCompleted: (data) => {
+      setIsModalOn(false);
+      userVar(null);
+      client.cache.reset();
+      router.push("/");
+    },
+  });
   const [isModalOn, setIsModalOn] = useState(false);
   const profileRef = useRef(null);
   const modalRef = useRef(null);
@@ -30,10 +37,6 @@ function Nav() {
 
   const handleLogout = async () => {
     await logout();
-    client.cache.reset();
-    setIsModalOn(false);
-    userVar(null);
-    router.push("/");
   };
 
   return (
@@ -44,7 +47,7 @@ function Nav() {
       <span>
         {_userVar && (
           <div className="flex items-center">
-            <span className="mr-8 cursor-pointer" onClick={() => router.push("/article/editor")}>
+            <span className="mr-8 cursor-pointer" onClick={() => router.push("/articles/editor")}>
               <Pencil color="gray" height="2rem" width="2rem" />
             </span>
             <span onClick={() => setIsModalOn((prev) => !prev)} className="cursor-pointer" ref={profileRef}>
