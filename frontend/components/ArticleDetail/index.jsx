@@ -2,6 +2,7 @@ import React, { memo, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import dayjs from "dayjs";
+import { TrashOutline } from "react-ionicons";
 import { useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 
@@ -11,6 +12,7 @@ export const CREATE_COMMENT = gql`
       comment {
         id
         user {
+          id
           username
           profile_image {
             url
@@ -19,6 +21,16 @@ export const CREATE_COMMENT = gql`
         likes
         content
         created_at
+      }
+    }
+  }
+`;
+
+const DELETE_COMMENT = gql`
+  mutation DeleteComment($input: deleteCommentInput) {
+    deleteComment(input: $input) {
+      comment {
+        id
       }
     }
   }
@@ -42,6 +54,7 @@ const GET_ARTICLE = gql`
       comments {
         id
         user {
+          id
           username
           profile_image {
             url
@@ -59,6 +72,23 @@ function ArticleDetail({ article }) {
   const _userVar = useReactiveVar(userVar);
   const router = useRouter();
   const [comment, setComment] = useState("");
+  const [deleteComment] = useMutation(DELETE_COMMENT, {
+    update(cache, { data }) {
+      const existingArticle = cache.readQuery({ query: GET_ARTICLE, variables: router.query });
+      const newComments = existingArticle.article.comments.filter(
+        (comment) => comment.id !== data.deleteComment.comment.id
+      );
+      cache.writeQuery({
+        query: GET_ARTICLE,
+        data: {
+          article: {
+            ...existingArticle.article,
+            comments: newComments,
+          },
+        },
+      });
+    },
+  });
   const [createComment, { data, error }] = useMutation(CREATE_COMMENT, {
     update(cache, { data }) {
       const existingArticle = cache.readQuery({ query: GET_ARTICLE, variables: router.query });
@@ -105,26 +135,33 @@ function ArticleDetail({ article }) {
       <div className="mt-10 pt-10 border-t-2 border-gray-200">
         <h3 className="text-xl font-semibold pb-5">Comments</h3>
         <div>
-          {article.comments.map((comment) => (
-            <div key={comment.id} className="flex py-2">
-              <div className="flex items-center w-32">
-                <div className="relative flex items-center justify-center w-5 h-5 mr-2 rounded-1/2 overflow-hidden ">
-                  {comment.user.profile_image ? (
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_API_SERVER}${comment.user.profile_image.url}`}
-                      width="20"
-                      height="20"
-                      objectFit="cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-gray-300" />
-                  )}
+          {article.comments.map((comment) => {
+            return (
+              <div key={comment.id} className="flex justify-between py-2">
+                <div className="flex">
+                  <div className="flex items-center w-32">
+                    <div className="relative flex items-center justify-center w-5 h-5 mr-2 rounded-1/2 overflow-hidden ">
+                      {comment.user.profile_image ? (
+                        <Image
+                          src={`${process.env.NEXT_PUBLIC_API_SERVER}${comment.user.profile_image.url}`}
+                          width="20"
+                          height="20"
+                          objectFit="cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-300" />
+                      )}
+                    </div>
+                    <span>{comment.user.username}</span>
+                  </div>
+                  <p>{comment.content}</p>
                 </div>
-                <span>{comment.user.username}</span>
+                <span onClick={() => deleteComment({ variables: { input: { where: { id: comment.id } } } })}>
+                  {comment.user.id === _userVar?.id && <TrashOutline color="red" />}
+                </span>
               </div>
-              <p>{comment.content}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <form className="flex pt-7" onSubmit={handleSubmit}>
           <input

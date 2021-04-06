@@ -26,6 +26,7 @@ const GET_ARTICLE = gql`
       comments {
         id
         user {
+          id
           username
           profile_image {
             url
