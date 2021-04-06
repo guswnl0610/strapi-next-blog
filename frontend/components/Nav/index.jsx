@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { PersonCircleOutline, SettingsSharp } from "react-ionicons";
+import { PersonCircleOutline, SettingsSharp, Pencil } from "react-ionicons";
 import { useQuery, useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 import { useClickOutside } from "hooks/useClickOutside";
@@ -43,21 +43,26 @@ function Nav() {
       </Link>
       <span>
         {_userVar && (
-          <span onClick={() => setIsModalOn((prev) => !prev)} className="cursor-pointer" ref={profileRef}>
-            {_userVar.profile_image?.url ? (
-              <div className="rounded-1/2 overflow-hidden w-8 h-8 hover:shadow-md transition-all">
-                <Image
-                  alt={`${_userVar.username}의 프로필사진`}
-                  src={`${process.env.NEXT_PUBLIC_API_SERVER}${_userVar?.profile_image?.url}`}
-                  width={50}
-                  height={50}
-                  objectFit="cover"
-                />
-              </div>
-            ) : (
-              <PersonCircleOutline color={`rgb(248, 113, 113)`} height="2rem" width="2rem" />
-            )}
-          </span>
+          <div className="flex items-center">
+            <span className="mr-8 cursor-pointer" onClick={() => router.push("/article/editor")}>
+              <Pencil color="gray" height="2rem" width="2rem" />
+            </span>
+            <span onClick={() => setIsModalOn((prev) => !prev)} className="cursor-pointer" ref={profileRef}>
+              {_userVar.profile_image?.url ? (
+                <div className="rounded-1/2 overflow-hidden w-8 h-8 hover:shadow-md transition-all">
+                  <Image
+                    alt={`${_userVar.username}의 프로필사진`}
+                    src={`${process.env.NEXT_PUBLIC_API_SERVER}${_userVar?.profile_image?.url}`}
+                    width={50}
+                    height={50}
+                    objectFit="cover"
+                  />
+                </div>
+              ) : (
+                <PersonCircleOutline color={`rgb(248, 113, 113)`} height="2rem" width="2rem" />
+              )}
+            </span>
+          </div>
         )}
       </span>
       <div
