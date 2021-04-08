@@ -17,6 +17,7 @@ const GET_ARTICLE = gql`
       desc
       likes
       user {
+        id
         username
         email
         profile_image {
@@ -42,18 +43,28 @@ const GET_ARTICLE = gql`
 
 function Article() {
   const router = useRouter();
-  const { data } = useQuery(GET_ARTICLE, { variables: router.query });
+  const { data, error } = useQuery(GET_ARTICLE, { variables: router.query });
 
   // const { article } = data;
   // const { user: author } = article;
 
+  if (error || !data.article)
+    return (
+      <BaseLayout>
+        <Head>
+          <title>존재하지 않는 게시물입니다</title>
+        </Head>
+        <main>존재하지 않는 게시물입니다 :(</main>
+      </BaseLayout>
+    );
+
   return (
     <BaseLayout>
       <Head>
-        <title>{data?.article.title}</title>
+        <title>{data?.article?.title}</title>
       </Head>
       <main className="flex m-10 justify-start">
-        <AuthorSide author={data?.article.user} />
+        <AuthorSide author={data?.article?.user} />
         <ArticleDetail article={data?.article} />
       </main>
     </BaseLayout>
