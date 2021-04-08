@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useQuery, gql } from "@apollo/client";
 import Link from "next/link";
 import Image from "next/image";
+import { useIntersectionObserver } from "hooks/useIntersectionObserver";
 
 const GET_LOUNGE_ARTICLE = gql`
   query ARTICLES($sort: String, $start: Int, $limit: Int) {
@@ -26,18 +27,40 @@ const GET_LOUNGE_ARTICLE = gql`
 const limit = 16;
 
 function LoungeIndex() {
-  const { data, fetchMore } = useQuery(GET_LOUNGE_ARTICLE, {
+  const { data, variables, fetchMore } = useQuery(GET_LOUNGE_ARTICLE, {
     variables: {
       sort: "id:desc",
       start: 0,
       limit,
     },
   });
+  const start = useRef(0);
+  const lastArticleIdRef = useRef(null);
+  const endOfListRef = useRef(null);
+
+  const handleIntersect = async (entries, observer) => {
+    console.log(entries[0]);
+    console.log(lastArticleIdRef.current);
+    if (entries[0].isIntersecting) {
+      await fetchMore({ variables: { ...variables, start: start.current + limit } });
+      start.current += limit;
+      observer.unobserve(entries[0].target);
+      if (lastArticleIdRef.current !== endOfListRef.current.previousElementSibling.id) {
+        lastArticleIdRef.current = endOfListRef.current.previousElementSibling.id;
+        observer.observe(endOfListRef.current);
+      }
+    }
+  };
+
+  useIntersectionObserver(endOfListRef, handleIntersect);
 
   return (
     <section className="grid grid-cols-4 gap-5 ">
       {data?.articles.map((article) => (
-        <div key={article.id} className="p-5 shadow-md group cursor-pointer rounded-lg hover:shadow-lg transition-all">
+        <div
+          key={article.id}
+          id={article.id}
+          className="p-5 shadow-md group cursor-pointer rounded-lg hover:shadow-lg transition-all">
           <Link href={`/articles/${article.id}`}>
             <a>
               <h4 className="truncate text-gray-600 font-semibold group-hover:text-red-300 transition-colors">
@@ -68,7 +91,7 @@ function LoungeIndex() {
           </Link>
         </div>
       ))}
-      <div />
+      <div ref={endOfListRef} />
     </section>
   );
 }

@@ -50,6 +50,16 @@ const createApolloClient = () => {
                 return merged;
               },
             },
+            articles: {
+              keyArgs: false,
+              merge(existing = [], incoming, { args: { start = 0 } }) {
+                const merged = [...(existing && existing)];
+                for (let i = 0; i < incoming.length; ++i) {
+                  merged[start + i] = incoming[i];
+                }
+                return merged;
+              },
+            },
           },
         },
       },
