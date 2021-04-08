@@ -68,6 +68,7 @@ function LoungeIndex() {
           </Link>
         </div>
       ))}
+      <div />
     </section>
   );
 }

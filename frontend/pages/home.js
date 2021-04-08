@@ -24,20 +24,6 @@ export const GET_ARTICLES = gql`
 const limit = 10;
 
 export default function Home() {
-  const start = useRef(0);
-  const { data, loading, variables, fetchMore } = useQuery(GET_ARTICLES, {
-    variables: {
-      sort: "id:desc",
-      start: 0,
-      limit,
-    },
-  });
-
-  const handlePagination = async () => {
-    await fetchMore({ variables: { ...variables, start: start.current + limit } });
-    start.current += limit;
-  };
-
   return (
     <BaseLayout>
       <Head>
@@ -45,7 +31,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="my-10">
-        {data && <ArticleList data={data.articlesByUser} onPagination={handlePagination} />}
+        <ArticleList />
       </main>
     </BaseLayout>
   );
@@ -55,6 +41,15 @@ export const getServerSideProps = async (ctx) => {
   const client = initializeApollo(null, ctx);
 
   await checkLoggedIn(client, ctx);
+
+  try {
+    await client.query({
+      query: GET_ARTICLES,
+      variables: { sort: "id:desc", start: 0, limit },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 
   return {
     props: {
