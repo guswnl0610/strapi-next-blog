@@ -43,10 +43,10 @@ export const MYINFO = gql`
 function UserSettings() {
   const { data: me } = useQuery(MYINFO);
   const [updateUser, { data: updatedUser }] = useMutation(UPDATE_USER);
-  const uploadedImageIdRef = useRef(me.myInfo?.profile_image?.id);
-  const [hasProfile, setHasProfile] = useState(!!me.myInfo.profile_image);
+  const uploadedImageIdRef = useRef(me?.myInfo?.profile_image?.id);
+  const [hasProfile, setHasProfile] = useState(!!me?.myInfo.profile_image);
   const [data, setData] = useState({
-    username: me.myInfo.username,
+    username: me?.myInfo.username,
   });
   const usernameRef = useRef(null);
   const [validState, setValidState] = useState({ username: { state: true, ref: usernameRef } });
@@ -115,7 +115,7 @@ function UserSettings() {
             {hasProfile ? (
               <div className="relative w-36 h-36 overflow-hidden group">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_API_SERVER}${me.myInfo.profile_image.url}`}
+                  src={`${process.env.NEXT_PUBLIC_API_SERVER}${me?.myInfo.profile_image.url || ""}`}
                   alt="profile"
                   width="144"
                   height="144"

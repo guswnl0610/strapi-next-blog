@@ -129,13 +129,13 @@ function ArticleDetail({ article }) {
 
   return (
     <article className="flex-1 p-10 ml-8 shadow-lg">
-      <h2 className="text-3xl font-bold pb-3">{article.title}</h2>
-      <p className="pb-3 text-gray-600">{dayjs(article.created_at).format("YYYY MMMM D ddd hh:mm a")}</p>
-      <div className="prose" dangerouslySetInnerHTML={{ __html: article.desc }} />
+      <h2 className="text-3xl font-bold pb-3">{article?.title}</h2>
+      <p className="pb-3 text-gray-600">{dayjs(article?.created_at).format("YYYY MMMM D ddd hh:mm a")}</p>
+      <div className="prose" dangerouslySetInnerHTML={{ __html: article?.desc }} />
       <div className="mt-10 pt-10 border-t-2 border-gray-200">
         <h3 className="text-xl font-semibold pb-5">Comments</h3>
         <div>
-          {article.comments.map((comment) => {
+          {article?.comments.map((comment) => {
             return (
               <div key={comment.id} className="flex justify-between py-2">
                 <div className="flex">

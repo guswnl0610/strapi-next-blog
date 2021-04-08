@@ -44,17 +44,17 @@ function Article() {
   const router = useRouter();
   const { data } = useQuery(GET_ARTICLE, { variables: router.query });
 
-  const { article } = data;
-  const { user: author } = article;
+  // const { article } = data;
+  // const { user: author } = article;
 
   return (
     <BaseLayout>
       <Head>
-        <title>{article.title}</title>
+        <title>{data?.article.title}</title>
       </Head>
       <main className="flex m-10 justify-start">
-        <AuthorSide author={author} />
-        <ArticleDetail article={article} />
+        <AuthorSide author={data?.article.user} />
+        <ArticleDetail article={data?.article} />
       </main>
     </BaseLayout>
   );
