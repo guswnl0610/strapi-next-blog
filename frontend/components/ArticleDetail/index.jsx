@@ -1,6 +1,7 @@
 import React, { memo, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import Link from "next/link";
 import dayjs from "dayjs";
 import { TrashOutline } from "react-ionicons";
 import { useMutation, useReactiveVar, gql } from "@apollo/client";
@@ -129,7 +130,17 @@ function ArticleDetail({ article }) {
 
   return (
     <article className="flex-1 p-10 ml-8 shadow-lg">
-      <h2 className="text-3xl font-bold pb-3">{article?.title}</h2>
+      <div className="flex justify-between">
+        <h2 className="text-3xl font-bold pb-3">{article?.title}</h2>
+        <span className="flex items-center text-sm">
+          <Link href={`/articles/editor?id=${article?.id || ""}`}>
+            <a className=" text-gray-400">편집</a>
+          </Link>
+          <span className="ml-2">
+            <TrashOutline color="red" height="1.1rem" />
+          </span>
+        </span>
+      </div>
       <p className="pb-3 text-gray-600">{dayjs(article?.created_at).format("YYYY MMMM D ddd hh:mm a")}</p>
       <div className="prose" dangerouslySetInnerHTML={{ __html: article?.desc }} />
       <div className="mt-10 pt-10 border-t-2 border-gray-200">

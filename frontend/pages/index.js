@@ -27,7 +27,6 @@ export default function Index() {
   const [isLoginTab, setisLoginTab] = useState(true);
   const { data: me, refetch } = useQuery(MYINFO, {
     onCompleted: (me) => {
-      console.log(me);
       router.push("/home");
     },
   });

@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { useMutation, useReactiveVar, gql } from "@apollo/client";
+import { useMutation, useReactiveVar, gql, useQuery } from "@apollo/client";
 import nookies from "nookies";
 import dynamic from "next/dynamic";
-import { EditorState, convertToRaw } from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
+import htmlToDraft from "html-to-draftjs";
 import BaseLayout from "components/Layout/BaseLayout";
 const Editor = dynamic(() => import("components/Editor/index"), { ssr: false });
 import { initializeApollo } from "lib/apollo/client";
@@ -21,20 +22,69 @@ const CREATE_ARTICLE = gql`
   }
 `;
 
+const GET_ARTICLE_BY_USER = gql`
+  query ArticleByUser($id: ID!) {
+    articleByUser(id: $id) {
+      title
+      desc
+    }
+  }
+`;
+
+const UPDATE_ARTICLE = gql`
+  mutation UpdateArticle($input: updateArticleInput) {
+    updateArticle(input: $input) {
+      article {
+        id
+      }
+    }
+  }
+`;
+
 function ArticleEditor(props) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const { data: existedArticle } = useQuery(GET_ARTICLE_BY_USER, {
+    variables: router.query,
+    onCompleted: (data) => {
+      if (!data) return;
+      setTitle(data.articleByUser.title);
+      const content = htmlToDraft(data.articleByUser.desc);
+      content &&
+        setEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(content.contentBlocks)));
+    },
+  });
   const [createArticle] = useMutation(CREATE_ARTICLE, {
     onCompleted: (data) => {
       router.push(`/articles/${data.createArticle.article.id}`);
     },
   });
+  const [updateArticle] = useMutation(UPDATE_ARTICLE, {
+    onCompleted: (data) => {
+      router.push(`/articles/${data.updateArticle.article.id}`);
+    },
+  });
+
   const _userVar = useReactiveVar(userVar);
 
   const handleComplete = async () => {
     const html = draftToHtml(convertToRaw(editorState.getCurrentContent()));
     if (!title || html === "<p></p>") return alert("내용을 입력해주세요");
+    if (existedArticle) {
+      updateArticle({
+        variables: {
+          input: {
+            where: router.query,
+            data: {
+              title,
+              desc: html,
+            },
+          },
+        },
+      });
+      return;
+    }
     createArticle({
       variables: {
         input: {
