@@ -12,7 +12,9 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      translate: ["group-hover"],
+    },
   },
   plugins: [require("@tailwindcss/typography"), require("@tailwindcss/line-clamp")],
 };

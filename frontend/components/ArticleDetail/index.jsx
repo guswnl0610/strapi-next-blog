@@ -87,7 +87,9 @@ function ArticleDetail({ article }) {
   const [deleteArticle] = useMutation(DELETE_ARTICLE, {
     variables: {
       input: {
-        where: router.query,
+        where: {
+          id: router.query.id,
+        },
       },
     },
     update(cache, { data }) {
@@ -106,7 +108,12 @@ function ArticleDetail({ article }) {
   });
   const [deleteComment] = useMutation(DELETE_COMMENT, {
     update(cache, { data }) {
-      const existingArticle = cache.readQuery({ query: GET_ARTICLE, variables: router.query });
+      const existingArticle = cache.readQuery({
+        query: GET_ARTICLE,
+        variables: {
+          id: router.query.id,
+        },
+      });
       const newComments = existingArticle.article.comments.filter(
         (comment) => comment.id !== data.deleteComment.comment.id
       );
@@ -123,7 +130,12 @@ function ArticleDetail({ article }) {
   });
   const [createComment, { data, error }] = useMutation(CREATE_COMMENT, {
     update(cache, { data }) {
-      const existingArticle = cache.readQuery({ query: GET_ARTICLE, variables: router.query });
+      const existingArticle = cache.readQuery({
+        query: GET_ARTICLE,
+        variables: {
+          id: router.query.id,
+        },
+      });
       const newComments = [...existingArticle.article.comments, data.createComment.comment];
       cache.writeQuery({
         query: GET_ARTICLE,

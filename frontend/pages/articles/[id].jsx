@@ -43,7 +43,7 @@ const GET_ARTICLE = gql`
 
 function Article() {
   const router = useRouter();
-  const { data, error } = useQuery(GET_ARTICLE, { variables: router.query });
+  const { data, error } = useQuery(GET_ARTICLE, { variables: { id: router.query.id } });
 
   // const { article } = data;
   // const { user: author } = article;
@@ -77,7 +77,7 @@ export const getServerSideProps = async (ctx) => {
   await checkLoggedIn(client, ctx);
 
   try {
-    await client.query({ query: GET_ARTICLE, variables: ctx.query });
+    await client.query({ query: GET_ARTICLE, variables: { id: ctx.query.id } });
   } catch (error) {
     console.log(error);
   }

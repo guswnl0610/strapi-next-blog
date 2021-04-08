@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useMutation, useReactiveVar, gql, useQuery } from "@apollo/client";
-import nookies from "nookies";
 import dynamic from "next/dynamic";
 import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
@@ -53,7 +52,7 @@ function ArticleEditor(props) {
   const [title, setTitle] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const { data: existedArticle } = useQuery(GET_ARTICLE_BY_USER, {
-    variables: router.query,
+    variables: { id: router.query.id },
     onCompleted: (data) => {
       if (!data) return;
       setTitle(data.articleByUser.title);
@@ -93,7 +92,7 @@ function ArticleEditor(props) {
       updateArticle({
         variables: {
           input: {
-            where: router.query,
+            where: { id: router.query.id },
             data: {
               title,
               desc: html,
