@@ -11,12 +11,19 @@ const Editor = dynamic(() => import("components/Editor/index"), { ssr: false });
 import { initializeApollo } from "lib/apollo/client";
 import { userVar } from "lib/apollo/store";
 import checkLoggedIn from "lib/checkLoggedIn";
+import { GET_ARTICLES } from "pages/home";
 
 const CREATE_ARTICLE = gql`
   mutation CreateArticle($input: createArticleInput) {
     createArticle(input: $input) {
       article {
         id
+        title
+        desc
+        created_at
+        comments {
+          id
+        }
       }
     }
   }
@@ -58,6 +65,17 @@ function ArticleEditor(props) {
   const [createArticle] = useMutation(CREATE_ARTICLE, {
     onCompleted: (data) => {
       router.push(`/articles/${data.createArticle.article.id}`);
+    },
+    update(cache, { data }) {
+      const existingArticles = cache.readQuery({ query: GET_ARTICLES });
+      const newArticles = [data.createArticle.article, ...existingArticles.articlesByUser];
+
+      cache.writeQuery({
+        query: GET_ARTICLES,
+        data: {
+          articlesByUser: newArticles,
+        },
+      });
     },
   });
   const [updateArticle] = useMutation(UPDATE_ARTICLE, {

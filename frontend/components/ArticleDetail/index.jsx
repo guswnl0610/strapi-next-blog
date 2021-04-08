@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { TrashOutline } from "react-ionicons";
 import { useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
+import { GET_ARTICLES } from "pages/home";
 
 export const CREATE_COMMENT = gql`
   mutation CreateComment($input: createCommentInput) {
@@ -69,10 +70,40 @@ const GET_ARTICLE = gql`
   }
 `;
 
+const DELETE_ARTICLE = gql`
+  mutation DeleteArticle($input: deleteArticleInput) {
+    deleteArticle(input: $input) {
+      article {
+        id
+      }
+    }
+  }
+`;
+
 function ArticleDetail({ article }) {
   const _userVar = useReactiveVar(userVar);
   const router = useRouter();
   const [comment, setComment] = useState("");
+  const [deleteArticle] = useMutation(DELETE_ARTICLE, {
+    variables: {
+      input: {
+        where: router.query,
+      },
+    },
+    update(cache, { data }) {
+      const existingArticles = cache.readQuery({ query: GET_ARTICLES });
+      const newArticles = existingArticles.articlesByUser.filter(
+        (article) => article.id !== data.deleteArticle.article.id
+      );
+      cache.writeQuery({
+        query: GET_ARTICLES,
+        data: {
+          articlesByUser: newArticles,
+        },
+      });
+    },
+    onCompleted: () => router.push("/home"),
+  });
   const [deleteComment] = useMutation(DELETE_COMMENT, {
     update(cache, { data }) {
       const existingArticle = cache.readQuery({ query: GET_ARTICLE, variables: router.query });
@@ -137,7 +168,7 @@ function ArticleDetail({ article }) {
             <Link href={`/articles/editor?id=${article?.id || ""}`}>
               <a className=" text-gray-400">편집</a>
             </Link>
-            <span className="ml-2">
+            <span className="ml-2" onClick={deleteArticle}>
               <TrashOutline color="red" height="1.1rem" />
             </span>
           </span>

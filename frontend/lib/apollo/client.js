@@ -36,10 +36,15 @@ const createApolloClient = () => {
           fields: {
             articlesByUser: {
               keyArgs: false,
-              merge(existing = [], incoming, { args: { start = 0 } }) {
+              merge(existing = [], incoming, { args }) {
                 const merged = [...(existing && existing)];
+                if (!args.sort) {
+                  // add or delete
+                  return [...incoming];
+                }
+
                 for (let i = 0; i < incoming.length; ++i) {
-                  merged[start + i] = incoming[i];
+                  merged[(args.start || 0) + i] = incoming[i];
                 }
                 // return [...existing, ...incoming];
                 return merged;
