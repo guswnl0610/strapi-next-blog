@@ -4,6 +4,7 @@ module.exports = {
   `,
   query: `
     articlesByUser(sort: String, start: Int, limit: Int): [Article]!
+    articleByUser(id: ID!): Article!
   `,
   mutation: `
   `,
@@ -16,6 +17,16 @@ module.exports = {
         resolver: async (obj, options, { context }) => {
           const articles = await strapi.controllers.article.findByUser(context);
           return articles;
+        },
+      },
+      articleByUser: {
+        description: "return a specific article by logined user",
+        resolverOf: "application::article.article.getArticleByMe",
+        resolver: async (obj, options, { context }) => {
+          const article = await strapi.controllers.article.getArticleByMe(
+            context
+          );
+          return article;
         },
       },
     },

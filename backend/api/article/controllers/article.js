@@ -15,4 +15,15 @@ module.exports = {
 
     return sanitizeEntity(entity, { model: strapi.models.article });
   },
+
+  async getArticleByMe(ctx) {
+    const { user } = ctx.state;
+    const entity = await strapi.services.article.findOne({ ...ctx.query });
+    if (entity.user.id !== user.id)
+      return ctx.forbidden(null, [
+        { messages: [{ id: "current user is not allowed" }] },
+      ]);
+
+    return sanitizeEntity(entity, { model: strapi.models.article });
+  },
 };
