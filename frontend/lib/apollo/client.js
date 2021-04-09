@@ -52,10 +52,14 @@ const createApolloClient = () => {
             },
             articles: {
               keyArgs: false,
-              merge(existing = [], incoming, { args: { start = 0 } }) {
+              merge(existing = [], incoming, { args }) {
                 const merged = [...(existing && existing)];
+                if (!args.sort) {
+                  return [...incoming];
+                }
+
                 for (let i = 0; i < incoming.length; ++i) {
-                  merged[start + i] = incoming[i];
+                  merged[(args.start || 0) + i] = incoming[i];
                 }
                 return merged;
               },

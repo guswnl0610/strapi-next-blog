@@ -7,6 +7,7 @@ import { TrashOutline } from "react-ionicons";
 import { useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 import { GET_ARTICLES } from "pages/home";
+import { GET_LOUNGE_ARTICLE } from "pages/lounge";
 
 export const CREATE_COMMENT = gql`
   mutation CreateComment($input: createCommentInput) {
@@ -101,6 +102,18 @@ function ArticleDetail({ article }) {
         query: GET_ARTICLES,
         data: {
           articlesByUser: newArticles,
+        },
+      });
+
+      const existingLoungeArticles = cache.readQuery({ query: GET_LOUNGE_ARTICLE });
+      const newLoungeArticles = existingLoungeArticles.articles.filter(
+        (article) => article.id !== data.deleteArticle.article.id
+      );
+
+      cache.writeQuery({
+        query: GET_LOUNGE_ARTICLE,
+        data: {
+          articles: newLoungeArticles,
         },
       });
     },

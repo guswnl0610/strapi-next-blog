@@ -11,6 +11,7 @@ import { initializeApollo } from "lib/apollo/client";
 import { userVar } from "lib/apollo/store";
 import checkLoggedIn from "lib/checkLoggedIn";
 import { GET_ARTICLES } from "pages/home";
+import { GET_LOUNGE_ARTICLE } from "pages/lounge";
 
 const CREATE_ARTICLE = gql`
   mutation CreateArticle($input: createArticleInput) {
@@ -73,6 +74,16 @@ function ArticleEditor(props) {
         query: GET_ARTICLES,
         data: {
           articlesByUser: newArticles,
+        },
+      });
+
+      const existingLoungeArticles = cache.readQuery({ query: GET_LOUNGE_ARTICLE });
+      const newLoungeArticles = [data.createArticle.article, ...existingLoungeArticles.articles];
+
+      cache.writeQuery({
+        query: GET_LOUNGE_ARTICLE,
+        data: {
+          articles: newLoungeArticles,
         },
       });
     },

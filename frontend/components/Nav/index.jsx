@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { PersonCircleOutline, SettingsSharp, Pencil } from "react-ionicons";
+import { PersonCircleOutline, SettingsSharp, Pencil, CompassOutline } from "react-ionicons";
 import { useQuery, useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 import { useClickOutside } from "hooks/useClickOutside";
@@ -47,7 +47,10 @@ function Nav() {
       <span>
         {_userVar && (
           <div className="flex items-center">
-            <span className="mr-8 cursor-pointer" onClick={() => router.push("/articles/editor")}>
+            <span className="cursor-pointer" onClick={() => router.push("/lounge")}>
+              <CompassOutline color="gray" height="2rem" width="2rem" />
+            </span>
+            <span className="mx-8 cursor-pointer" onClick={() => router.push("/articles/editor")}>
               <Pencil color="gray" height="2rem" width="2rem" />
             </span>
             <span onClick={() => setIsModalOn((prev) => !prev)} className="cursor-pointer" ref={profileRef}>

@@ -7,7 +7,7 @@ import { initializeApollo } from "lib/apollo/client";
 import checkLoggedIn from "lib/checkLoggedIn";
 import LoungeList from "components/LoungeList";
 
-const GET_LOUNGE_ARTICLE = gql`
+export const GET_LOUNGE_ARTICLE = gql`
   query ARTICLES($sort: String, $start: Int, $limit: Int) {
     articles(sort: $sort, start: $start, limit: $limit) {
       id
