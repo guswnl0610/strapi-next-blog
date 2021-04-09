@@ -36,6 +36,7 @@ function Lounge() {
       start: 0,
       limit,
     },
+    fetchPolicy: "cache-and-network",
   });
 
   return (
