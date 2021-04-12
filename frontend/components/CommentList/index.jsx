@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { useReactiveVar, gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -37,18 +37,20 @@ const DELETE_COMMENT = gql`
 
 const UPDATE_COMMENT = gql`
   mutation UpdateComment($input: updateCommentInput) {
-    comment {
-      id
-      user {
+    updateComment(input: $input) {
+      comment {
         id
-        username
-        profile_image {
-          url
+        user {
+          id
+          username
+          profile_image {
+            url
+          }
         }
+        likes
+        content
+        created_at
       }
-      likes
-      content
-      created_at
     }
   }
 `;
@@ -87,6 +89,7 @@ const GET_ARTICLE = gql`
 
 function CommentList({ article }) {
   const [comment, setComment] = useState("");
+  const [modifyComment, setModifyComment] = useState("");
   const _userVar = useReactiveVar(userVar);
   const router = useRouter();
   // const modifyingCommentIdRef = useRef(null);
@@ -156,6 +159,25 @@ function CommentList({ article }) {
     setComment("");
   };
 
+  const handleModifySubmit = (e) => {
+    e.preventDefault();
+    if (!modifyComment.trim()) return;
+    updateComment({
+      variables: {
+        input: {
+          where: {
+            id: modifyingCommentId,
+          },
+          data: {
+            content: modifyComment,
+          },
+        },
+      },
+    });
+    setModifyComment("");
+    setModifyingCommentId(null);
+  };
+
   const handleChange = useCallback((e) => {
     setComment(e.target.value);
   }, []);
@@ -165,8 +187,8 @@ function CommentList({ article }) {
       <div>
         {article?.comments.map((comment) => {
           return (
-            <>
-              <div key={comment.id} className="flex justify-between py-2">
+            <React.Fragment key={comment.id}>
+              <div className="flex justify-between py-2">
                 <div className="flex">
                   <div className="flex items-center w-32">
                     <div className="relative flex items-center justify-center w-5 h-5 mr-2 rounded-1/2 overflow-hidden ">
@@ -197,10 +219,12 @@ function CommentList({ article }) {
                 )}
               </div>
               {modifyingCommentId === comment.id && (
-                <form className="flex">
+                <form className="flex" onSubmit={handleModifySubmit}>
                   <input
                     type="text"
                     className=" flex-1 px-3 ring-2 ring-gray-200 rounded-lg focus:outline-none focus:ring-red-100"
+                    value={modifyComment}
+                    onChange={(e) => setModifyComment(e.target.value)}
                   />
                   <button className="py-2 px-4 ml-3 bg-red-200 rounded-lg">수정</button>
                   <button className="py-2 px-4 ml-3 bg-gray-200 rounded-lg" onClick={() => setModifyingCommentId(null)}>
@@ -208,7 +232,7 @@ function CommentList({ article }) {
                   </button>
                 </form>
               )}
-            </>
+            </React.Fragment>
           );
         })}
       </div>
