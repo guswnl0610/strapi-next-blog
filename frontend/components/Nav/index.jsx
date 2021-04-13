@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { PersonCircleOutline, SettingsSharp, Pencil, CompassOutline } from "react-ionicons";
-import { useQuery, useMutation, useReactiveVar, gql } from "@apollo/client";
+import { PersonCircleOutline, SettingsSharp, Pencil, CompassOutline, Search } from "react-ionicons";
+import { useLazyQuery, useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 import { useClickOutside } from "hooks/useClickOutside";
 import { useAuth } from "hooks/useAuth";
@@ -13,6 +13,18 @@ const LOGOUT = gql`
     logout {
       authorized
       message
+    }
+  }
+`;
+
+const SEARCH_ARTICLES = gql`
+  query SearchArticles($where: JSON) {
+    articles(where: $where, limit: 20, start: 0) {
+      id
+      title
+      user {
+        username
+      }
     }
   }
 `;
@@ -28,8 +40,11 @@ function Nav() {
     },
   });
   const [isModalOn, setIsModalOn] = useState(false);
+  const [searchModalOn, setSearchModalOn] = useState(false);
+  const [search, { data: searchResult, error }] = useLazyQuery(SEARCH_ARTICLES, { fetchPolicy: "cache-and-network" });
   const profileRef = useRef(null);
   const modalRef = useRef(null);
+  const searchInputRef = useRef(null);
   const router = useRouter();
 
   useClickOutside(modalRef, () => setIsModalOn(false), profileRef);
@@ -39,11 +54,53 @@ function Nav() {
     await logout();
   };
 
+  const handleChange = (e) => {
+    const { value } = e.target;
+    if (!value.trim()) return;
+    search({
+      variables: {
+        where: {
+          title_contains: value,
+        },
+      },
+    });
+  };
+
   return (
-    <nav className="flex justify-between sticky top-0 w-full py-3 px-6 h-14 bg-white shadow-lg z-20">
+    <nav className="flex justify-between items-center sticky top-0 w-full py-3 px-6 h-14 bg-white shadow-lg z-20">
       <Link href="/home">
-        <a className="text-2xl text-gray-700 font-bold">Title</a>
+        <a className="text-2xl text-gray-700 font-bold">
+          {_userVar && _userVar.blogTitle ? _userVar.blogTitle : "menglog"}
+        </a>
       </Link>
+      <span className="flex relative w-64 group text-gray-700 text-sm ">
+        <input
+          className=" pl-7 pb-1 w-full border-b border-gray-400 focus:outline-none focus:border-red-200 transition-colors"
+          type="text"
+          onChange={handleChange}
+          onFocus={() => setSearchModalOn(true)}
+          onBlur={() => setSearchModalOn(false)}
+          ref={searchInputRef}
+        />
+        <span className="absolute">
+          <Search color="gray" />
+        </span>
+        {searchModalOn && (
+          <div className="  absolute top-10 bg-white w-64 px-3 py-2 shadow-lg">
+            {!searchInputRef.current.value.trim() || !searchResult.articles.length ? (
+              <div className="text-center">{`검색 결과가 없습니다 :(`}</div>
+            ) : (
+              searchResult.articles.map((article) => (
+                <div key={article.id} className="flex justify-between">
+                  <span className=" text-md truncate">{article.title}</span>
+                  <span className="text-sm text-gray-600">{article.user.username}</span>
+                </div>
+              ))
+            )}
+            <div className="flex justify-end items-center"></div>
+          </div>
+        )}
+      </span>
       <span>
         {_userVar && (
           <div className="flex items-center">

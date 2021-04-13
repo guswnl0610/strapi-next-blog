@@ -13,7 +13,7 @@ module.exports = {
   },
   variants: {
     extend: {
-      translate: ["group-hover"],
+      backgroundColor: ["group-focus"],
     },
   },
   plugins: [require("@tailwindcss/typography"), require("@tailwindcss/line-clamp")],

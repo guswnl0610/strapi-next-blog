@@ -9,6 +9,7 @@ const checkLoggedIn = async (client, ctx) => {
           myInfo {
             id
             username
+            blogTitle
           }
         }
       `,

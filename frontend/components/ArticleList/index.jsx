@@ -41,13 +41,15 @@ function ArticleList() {
             ref={idx === data?.articlesByUser.length - 1 ? listRef : null}
             className="group my-2 cursor-pointer py-2 px-3 rounded-lg text-gray-600">
             <Link href={`/articles/:id`} as={`/articles/${article?.id || ""}`}>
-              <a className=" text-gray-800  transition-colors">
-                <span className="font-semibold  group-hover:text-red-400 text-lg">{article?.title}</span>
-                <p className="flex items-center text-sm text-gray-400">
-                  <TimeOutline color={"#00000"} width="1rem" />
-                  <span className="pl-1">{dayjs(article?.created_at).format("YYYY MMMM D ddd hh:mm a")}</span>
-                </p>
-                <div className="text-sm line-clamp-2 " dangerouslySetInnerHTML={{ __html: article?.desc }} />
+              <a className="flex justify-between items-center text-gray-800  transition-colors">
+                <div>
+                  <span className="font-semibold  group-hover:text-red-400 text-lg">{article?.title}</span>
+                  <p className="flex items-center text-sm text-gray-400">
+                    <TimeOutline color={"#00000"} width="1rem" />
+                    <span className="pl-1">{dayjs(article?.created_at).format("YYYY MMMM D ddd hh:mm a")}</span>
+                  </p>
+                  <div className="text-sm line-clamp-2 " dangerouslySetInnerHTML={{ __html: article?.desc }} />
+                </div>
                 <div className="flex items-center text-sm text-gray-400">
                   <ChatboxEllipsesOutline color={"#00000"} />
                   <span className="pl-1">{article?.comments.length}</span>

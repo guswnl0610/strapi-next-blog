@@ -13,6 +13,7 @@ export const MYINFO = gql`
         id
         url
       }
+      blogTitle
     }
   }
 `;

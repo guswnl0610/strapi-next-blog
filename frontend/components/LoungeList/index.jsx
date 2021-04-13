@@ -39,8 +39,6 @@ function LoungeIndex() {
   const endOfListRef = useRef(null);
 
   const handleIntersect = async (entries, observer) => {
-    console.log(entries[0]);
-    console.log(lastArticleIdRef.current);
     if (entries[0].isIntersecting) {
       await fetchMore({ variables: { ...variables, start: start.current + limit } });
       start.current += limit;
