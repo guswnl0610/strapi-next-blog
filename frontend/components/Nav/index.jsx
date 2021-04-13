@@ -45,9 +45,11 @@ function Nav() {
   const profileRef = useRef(null);
   const modalRef = useRef(null);
   const searchInputRef = useRef(null);
+  const searchModalRef = useRef(null);
   const router = useRouter();
 
   useClickOutside(modalRef, () => setIsModalOn(false), profileRef);
+  useClickOutside(searchModalRef, () => setSearchModalOn(false));
   useAuth();
 
   const handleLogout = async () => {
@@ -79,22 +81,25 @@ function Nav() {
           type="text"
           onChange={handleChange}
           onFocus={() => setSearchModalOn(true)}
-          onBlur={() => setSearchModalOn(false)}
           ref={searchInputRef}
         />
         <span className="absolute">
           <Search color="gray" />
         </span>
         {searchModalOn && (
-          <div className="  absolute top-10 bg-white w-64 px-3 py-2 shadow-lg">
-            {!searchInputRef.current.value.trim() || !searchResult.articles.length ? (
+          <div className="  absolute top-10 bg-white w-64 px-3 py-2 shadow-lg" ref={searchModalRef}>
+            {!searchInputRef.current.value.trim() || !searchResult?.articles.length ? (
               <div className="text-center">{`검색 결과가 없습니다 :(`}</div>
             ) : (
               searchResult.articles.map((article) => (
-                <div key={article.id} className="flex justify-between">
-                  <span className=" text-md truncate">{article.title}</span>
-                  <span className="text-sm text-gray-600">{article.user.username}</span>
-                </div>
+                <Link key={article.id} href={`/articles/${article.id}`}>
+                  <a className="cursor-pointer">
+                    <div className="flex justify-between py-1">
+                      <span className=" text-md truncate">{article.title}</span>
+                      <span className="text-sm text-gray-600">{article.user.username}</span>
+                    </div>
+                  </a>
+                </Link>
               ))
             )}
             <div className="flex justify-end items-center"></div>
