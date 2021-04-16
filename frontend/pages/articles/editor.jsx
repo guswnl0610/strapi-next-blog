@@ -119,7 +119,6 @@ function ArticleEditor(props) {
           data: {
             title,
             desc: html,
-            likes: 0,
             user: _userVar.id,
           },
         },
