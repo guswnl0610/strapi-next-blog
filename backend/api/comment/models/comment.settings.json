@@ -19,8 +19,8 @@
       "type": "integer"
     },
     "article": {
-      "model": "article",
-      "via": "comments"
+      "via": "comments",
+      "model": "article"
     },
     "user": {
       "via": "comments",

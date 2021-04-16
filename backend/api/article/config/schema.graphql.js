@@ -7,6 +7,8 @@ module.exports = {
     articleByUser(id: ID!): Article!
   `,
   mutation: `
+    likeArticle(id: ID!): Article!
+    dislikeArticle(id: ID!): Article!
   `,
   type: {},
   resolver: {
@@ -30,6 +32,25 @@ module.exports = {
         },
       },
     },
-    Mutation: {},
+    Mutation: {
+      likeArticle: {
+        description: "likes a specific article",
+        resolverOf: "application::article.article.likeArticle",
+        resolver: async (obj, options, { context }) => {
+          const article = await strapi.controllers.article.likeArticle(context);
+          return article;
+        },
+      },
+      dislikeArticle: {
+        description: "undo likes on a specific article",
+        resolverOf: "application::article.article.dislikeArticle",
+        resolver: async (obj, options, { context }) => {
+          const article = await strapi.controllers.article.dislikeArticle(
+            context
+          );
+          return article;
+        },
+      },
+    },
   },
 };

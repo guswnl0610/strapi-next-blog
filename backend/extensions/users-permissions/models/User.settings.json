@@ -60,8 +60,8 @@
       "configurable": false
     },
     "articles": {
-      "collection": "article",
-      "via": "user"
+      "via": "user",
+      "collection": "article"
     },
     "comments": {
       "collection": "comment",
@@ -78,6 +78,11 @@
     },
     "blogTitle": {
       "type": "string"
+    },
+    "like_articles": {
+      "via": "like_users",
+      "collection": "article",
+      "dominant": true
     }
   }
 }

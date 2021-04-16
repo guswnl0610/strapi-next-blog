@@ -8,14 +8,16 @@ import AuthorSide from "components/AuthorSide";
 import ArticleDetail from "components/ArticleDetail";
 import checkLoggedIn from "lib/checkLoggedIn";
 
-const GET_ARTICLE = gql`
+export const GET_ARTICLE = gql`
   query Article($id: ID!) {
     article(id: $id) {
       id
       created_at
       title
       desc
-      likes
+      like_users {
+        id
+      }
       user {
         id
         username
@@ -33,7 +35,6 @@ const GET_ARTICLE = gql`
             url
           }
         }
-        likes
         content
         created_at
       }

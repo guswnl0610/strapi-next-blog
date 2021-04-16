@@ -13,7 +13,6 @@ export const GET_LOUNGE_ARTICLE = gql`
       id
       title
       desc
-      likes
       user {
         username
         profile_image {

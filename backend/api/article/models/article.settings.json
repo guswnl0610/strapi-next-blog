@@ -20,16 +20,22 @@
       "required": true
     },
     "likes": {
-      "type": "integer"
+      "type": "integer",
+      "min": 0
     },
     "comments": {
-      "via": "article",
-      "collection": "comment"
+      "collection": "comment",
+      "via": "article"
     },
     "user": {
-      "via": "articles",
       "plugin": "users-permissions",
-      "model": "user"
+      "model": "user",
+      "via": "articles"
+    },
+    "like_users": {
+      "plugin": "users-permissions",
+      "collection": "user",
+      "via": "like_articles"
     }
   }
 }

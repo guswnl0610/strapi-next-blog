@@ -3,11 +3,12 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { TrashOutline } from "react-ionicons";
+import { TrashOutline, HeartOutline, Heart } from "react-ionicons";
 import { useMutation, useReactiveVar, gql } from "@apollo/client";
 import { userVar } from "lib/apollo/store";
 import { GET_ARTICLES } from "pages/home";
 import { GET_LOUNGE_ARTICLE } from "pages/lounge";
+import { GET_ARTICLE } from "pages/articles/[id]";
 import CommentList from "components/CommentList";
 
 const DELETE_ARTICLE = gql`
@@ -20,9 +21,79 @@ const DELETE_ARTICLE = gql`
   }
 `;
 
+const LIKE_ARTICLE = gql`
+  mutation LikeArticle($id: ID!) {
+    likeArticle(id: $id) {
+      like_users {
+        id
+      }
+    }
+  }
+`;
+
+const DISLIKE_ARTICLE = gql`
+  mutation DislikeArticle($id: ID!) {
+    dislikeArticle(id: $id) {
+      like_users {
+        id
+      }
+    }
+  }
+`;
+
 function ArticleDetail({ article }) {
   const _userVar = useReactiveVar(userVar);
   const router = useRouter();
+
+  const [likeArticle] = useMutation(LIKE_ARTICLE, {
+    variables: {
+      id: router.query.id,
+    },
+    update(cache, { data }) {
+      const prevArticle = cache.readQuery({
+        query: GET_ARTICLE,
+        variables: {
+          id: router.query.id,
+        },
+      });
+
+      cache.writeQuery({
+        query: GET_ARTICLE,
+        variables: { id: router.query.id },
+        data: {
+          article: {
+            ...prevArticle.article,
+            like_users: data.likeArticle.like_users,
+          },
+        },
+      });
+    },
+  });
+  const [dislikeArticle] = useMutation(DISLIKE_ARTICLE, {
+    variables: {
+      id: router.query.id,
+    },
+    update(cache, { data }) {
+      const prevArticle = cache.readQuery({
+        query: GET_ARTICLE,
+        variables: {
+          id: router.query.id,
+        },
+      });
+
+      cache.writeQuery({
+        query: GET_ARTICLE,
+        variables: { id: router.query.id },
+        data: {
+          article: {
+            ...prevArticle.article,
+            like_users: data.dislikeArticle.like_users,
+          },
+        },
+      });
+    },
+  });
+
   const [deleteArticle] = useMutation(DELETE_ARTICLE, {
     variables: {
       input: {
@@ -75,6 +146,18 @@ function ArticleDetail({ article }) {
       </div>
       <p className="pb-3 text-gray-600">{dayjs(article?.created_at).format("YYYY MMMM D ddd hh:mm a")}</p>
       <div className="prose" dangerouslySetInnerHTML={{ __html: article?.desc }} />
+      <div className="flex items-center text-sm text-gray-400 pt-5">
+        {article?.like_users.find((user) => user.id === _userVar?.id) ? (
+          <span onClick={dislikeArticle} className="cursor-pointer">
+            <Heart color="#fecaca" width="2rem" height="2rem" />
+          </span>
+        ) : (
+          <span onClick={likeArticle} className="cursor-pointer">
+            <HeartOutline color="gray" width="2rem" height="2rem" />
+          </span>
+        )}
+        <span className="ml-3">{`${article?.like_users.length}`}</span>
+      </div>
       <div className="mt-10 pt-10 border-t-2 border-gray-200">
         <h3 className="text-xl font-semibold pb-5">Comments</h3>
         <CommentList article={article} />
